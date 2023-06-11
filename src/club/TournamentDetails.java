@@ -1,0 +1,394 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ */
+package club;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
+
+
+
+public class TournamentDetails extends javax.swing.JFrame {
+
+    static int selectedTid ;// varable to store previously selected Coach
+    
+    
+    //================== variable declaration for DB connection====================
+    private static final String username =ConnVariable.username1;
+    private static final String password=ConnVariable.password1;
+    private static final String dataconn =ConnVariable.dataconn1;
+    
+    Connection sqlconn= null;
+    PreparedStatement pst =null;
+    ResultSet RS =null;
+//====================================================================================
+    
+    
+    
+    
+    public TournamentDetails() {
+        initComponents();
+        FillTextFields();
+        UpdateTable();
+    }
+    
+    
+    
+    //=======================Function to add values to text fields=============================
+    void FillTextFields(){
+        
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            sqlconn = DriverManager.getConnection(dataconn, username, password);
+            pst = sqlconn.prepareStatement("select tournament.tid,tournament.tname, count(sponsor.tid) as nospon " +
+                                            "from tournament " +
+                                            "left join sponsor on sponsor.tid=tournament.tid " +
+                                            "where tournament.tid=? " +
+                                            "group by sponsor.tid");
+            
+            pst.setInt(1, selectedTid);
+            
+            
+            RS = pst.executeQuery();
+            
+            while (RS.next()){
+            jTextFieldId.setText(RS.getString("tournament.tid"));
+            jTextFieldName.setText(RS.getString("tournament.tname"));
+            jTextFieldNoOfSponsors.setText(RS.getString("nospon"));
+            
+            }
+           sqlconn.close();
+           
+            }
+        catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(TournamentDetails.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(TournamentDetails.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+           JOptionPane.showMessageDialog(null, ex);
+        }
+    }
+    
+    //=====================================================================================
+    
+    
+    //===========================Function to show and update content on table=========================
+     public void UpdateTable(){
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            sqlconn = DriverManager.getConnection(dataconn, username, password);
+            pst = sqlconn.prepareStatement("select sponsor.sponname from sponsor where sponsor.tid=?");
+            
+           
+            pst.setInt(1,selectedTid); 
+            RS=pst.executeQuery();
+            ResultSetMetaData StData = RS.getMetaData();
+            
+            int q = StData.getColumnCount();
+            
+            DefaultTableModel RecordTable = (DefaultTableModel)jTableSponsors.getModel();
+            RecordTable.setRowCount(0);
+            
+            while (RS.next()){
+                Vector coloumnData =new Vector();
+                
+                for(int i=0;i<q;i++){
+                    coloumnData.add(RS.getString("sponsor.sponname"));
+                      
+                }
+                RecordTable.addRow(coloumnData);
+            }
+            sqlconn.close();
+            }
+        catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(TournamentDetails.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(TournamentDetails .class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+           JOptionPane.showMessageDialog(null, ex);
+        }   
+        
+    }
+//========================================================================================================================================
+    
+    
+    
+    
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jPanel1 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jTextFieldNoOfSponsors = new javax.swing.JTextField();
+        jTextFieldName = new javax.swing.JTextField();
+        jTextFieldId = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTableSponsors = new javax.swing.JTable();
+        jLabel5 = new javax.swing.JLabel();
+        jTextFieldSponsor = new javax.swing.JTextField();
+        jButtonAdd = new javax.swing.JButton();
+        jButtonBack = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jPanel1.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jPanel2.setBackground(new java.awt.Color(227, 225, 225));
+
+        jLabel1.setFont(new java.awt.Font("Sitka Text", 1, 20)); // NOI18N
+        jLabel1.setText("Tournament Details");
+
+        jLabel2.setFont(new java.awt.Font("Sitka Text", 1, 14)); // NOI18N
+        jLabel2.setText("Name :");
+
+        jLabel3.setFont(new java.awt.Font("Sitka Text", 1, 14)); // NOI18N
+        jLabel3.setText("ID :");
+
+        jLabel4.setFont(new java.awt.Font("Sitka Text", 1, 14)); // NOI18N
+        jLabel4.setText("No. of Sponsors :");
+
+        jTextFieldNoOfSponsors.setEditable(false);
+        jTextFieldNoOfSponsors.setBackground(new java.awt.Color(204, 204, 204));
+
+        jTextFieldName.setEditable(false);
+        jTextFieldName.setBackground(new java.awt.Color(204, 204, 204));
+
+        jTextFieldId.setEditable(false);
+        jTextFieldId.setBackground(new java.awt.Color(204, 204, 204));
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(21, 21, 21)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextFieldNoOfSponsors))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextFieldName))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextFieldId, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(34, 34, 34)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(16, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(47, 47, 47)
+                .addComponent(jLabel1)
+                .addGap(54, 54, 54)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(jTextFieldId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(24, 24, 24)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(jTextFieldName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(34, 34, 34)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(jTextFieldNoOfSponsors, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(445, Short.MAX_VALUE))
+        );
+
+        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 330, -1));
+
+        jTableSponsors.setBackground(new java.awt.Color(204, 204, 204));
+        jTableSponsors.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null}
+            },
+            new String [] {
+                "Sponsors"
+            }
+        ));
+        jScrollPane1.setViewportView(jTableSponsors);
+
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 150, 281, 190));
+
+        jLabel5.setFont(new java.awt.Font("Sitka Text", 1, 12)); // NOI18N
+        jLabel5.setText("Add Sponsor :");
+        jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 400, 95, -1));
+
+        jTextFieldSponsor.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel1.add(jTextFieldSponsor, new org.netbeans.lib.awtextra.AbsoluteConstraints(459, 400, 222, -1));
+
+        jButtonAdd.setBackground(new java.awt.Color(0, 0, 0));
+        jButtonAdd.setForeground(new java.awt.Color(255, 255, 255));
+        jButtonAdd.setText("Add");
+        jButtonAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonAddActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButtonAdd, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 550, 90, 30));
+
+        jButtonBack.setBackground(new java.awt.Color(0, 0, 0));
+        jButtonBack.setForeground(new java.awt.Color(255, 255, 255));
+        jButtonBack.setText("Back");
+        jButtonBack.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonBackActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButtonBack, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 550, 90, 30));
+
+        jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/log.png"))); // NOI18N
+        jLabel6.setText("jLabel6");
+        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 0, 900, -1));
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        setSize(new java.awt.Dimension(987, 716));
+        setLocationRelativeTo(null);
+    }// </editor-fold>//GEN-END:initComponents
+
+    
+    //==========================Back Button==================================
+    private void jButtonBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBackActionPerformed
+        this.dispose();
+    }//GEN-LAST:event_jButtonBackActionPerformed
+
+    
+    
+    //=======================Add button===================
+    private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddActionPerformed
+        
+        //=============Add Sponsor
+         try {
+                    Class.forName("com.mysql.jdbc.Driver");
+                    sqlconn = DriverManager.getConnection(dataconn, username, password);
+                    pst = sqlconn.prepareStatement("insert into sponsor(sponname,tid) values(?,?)");
+
+                    //get values from interface
+                    pst.setString(1,jTextFieldSponsor.getText());
+                    pst.setInt(2,selectedTid);
+                    
+
+                   // execute statement
+                   pst.executeUpdate();
+                   UpdateTable();//update table function called
+                   FillTextFields();
+                   sqlconn.close();
+
+                    
+                    }
+                catch (ClassNotFoundException ex) {
+                    java.util.logging.Logger.getLogger(TournamentDetails.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                } catch (SQLException ex) {
+                    Logger.getLogger(TournamentDetails.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
+                   JOptionPane.showMessageDialog(null, ex);
+                }
+        
+        
+    }//GEN-LAST:event_jButtonAddActionPerformed
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(TournamentDetails.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(TournamentDetails.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(TournamentDetails.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(TournamentDetails.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new TournamentDetails().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButtonAdd;
+    private javax.swing.JButton jButtonBack;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTableSponsors;
+    private javax.swing.JTextField jTextFieldId;
+    private javax.swing.JTextField jTextFieldName;
+    private javax.swing.JTextField jTextFieldNoOfSponsors;
+    private javax.swing.JTextField jTextFieldSponsor;
+    // End of variables declaration//GEN-END:variables
+}

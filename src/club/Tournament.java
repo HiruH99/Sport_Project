@@ -1,0 +1,404 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ */
+package club;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+/**
+ *
+ * @author HIRUNI
+ */
+public class Tournament extends javax.swing.JFrame {
+    
+    int selectCheck=0; //variable to identift selected or not
+    int tid; //variable to tempary store selected row's tid
+
+    //==============Database connection===========================
+    private static final String username =ConnVariable.username1;
+    private static final String password=ConnVariable.password1;
+    private static final String dataconn =ConnVariable.dataconn1;
+    
+    Connection sqlconn= null;
+    PreparedStatement pst =null;
+    ResultSet RS =null;
+    //=============================================================================
+    
+    
+    public Tournament() {
+        initComponents();
+        UpdateDB();
+        SetComboSport();
+    }
+
+    
+    //===========================Function to show and update content on table=========================
+    public void UpdateDB(){
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            sqlconn = DriverManager.getConnection(dataconn, username, password);
+            pst = sqlconn.prepareStatement("select t.tid,t.tname,s.sname,count(sponsor.tid) as cnt from tournament t join sport s on s.sid=t.sid left join sponsor on t.tid=sponsor.tid group by tid ");
+            
+            RS=pst.executeQuery();
+            ResultSetMetaData StData = RS.getMetaData();
+            
+            int q = StData.getColumnCount();
+            
+            DefaultTableModel RecordTableTou = (DefaultTableModel)tournamentTable.getModel();
+            RecordTableTou.setRowCount(0);
+            
+            while (RS.next()){
+                Vector coloumnData =new Vector();
+                
+                for(int i=0;i<q;i++){
+                    coloumnData.add(RS.getString("t.tid"));
+                    coloumnData.add(RS.getString("t.tname"));
+                    coloumnData.add(RS.getString("s.sname"));
+                    coloumnData.add(RS.getString("cnt"));
+                        
+                }  
+                RecordTableTou.addRow(coloumnData);
+            }
+            sqlconn.close();
+            
+            }
+        catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(Tournament.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(Tournament.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+           JOptionPane.showMessageDialog(null, ex);
+        }   
+        
+    }
+    
+  //============================================================================================================================ 
+    
+    //========================Function to set sport names  to combobox========================================================
+    private void SetComboSport(){
+         try {
+            Class.forName("com.mysql.jdbc.Driver");
+            sqlconn = DriverManager.getConnection(dataconn, username, password);
+            pst = sqlconn.prepareStatement("select sname from sport");
+            
+            RS=pst.executeQuery();
+            
+            
+               while (RS.next()){
+                  String cbValue = RS.getString("sname");
+                  jComboBoxSport.addItem(cbValue);
+                   
+                   
+            }
+            sqlconn.close();
+            }
+        catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(coach.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(coach.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+           JOptionPane.showMessageDialog(null, ex);
+        }
+        
+    }
+    //==========================================================================================
+    
+    
+    
+   //==============================Function to set text fields null===========================
+     private void ClearTextFields(){
+         jTextFieldTname.setText(null);
+         
+     }
+     //===================================================================================  
+    
+    
+    
+    
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jPanel1 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tournamentTable = new javax.swing.JTable();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jTextFieldTname = new javax.swing.JTextField();
+        jButtonAdd = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        jComboBoxSport = new javax.swing.JComboBox<>();
+        jButtonDetails = new javax.swing.JButton();
+        jButtonReset = new javax.swing.JButton();
+        jButtonBack = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel1.setFont(new java.awt.Font("Sitka Text", 1, 20)); // NOI18N
+        jLabel1.setText("Tournaments");
+        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 40, 175, -1));
+
+        tournamentTable.setBackground(new java.awt.Color(204, 204, 204));
+        tournamentTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Tournament ID", "Name", "Sport", "No. of Sponsors"
+            }
+        ));
+        tournamentTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tournamentTableMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tournamentTable);
+
+        jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 120, 638, 188));
+
+        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/wins.png"))); // NOI18N
+        jLabel4.setText("jLabel4");
+        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 410, 680));
+
+        jLabel2.setFont(new java.awt.Font("Sitka Text", 1, 12)); // NOI18N
+        jLabel2.setText("Add Name :");
+        jPanel2.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 390, 80, 30));
+
+        jTextFieldTname.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel2.add(jTextFieldTname, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 390, 258, -1));
+
+        jButtonAdd.setBackground(new java.awt.Color(51, 51, 51));
+        jButtonAdd.setFont(new java.awt.Font("Sitka Text", 1, 12)); // NOI18N
+        jButtonAdd.setForeground(new java.awt.Color(255, 255, 255));
+        jButtonAdd.setText("Add");
+        jButtonAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonAddActionPerformed(evt);
+            }
+        });
+        jPanel2.add(jButtonAdd, new org.netbeans.lib.awtextra.AbsoluteConstraints(870, 390, 65, -1));
+
+        jLabel3.setFont(new java.awt.Font("Sitka Text", 1, 12)); // NOI18N
+        jLabel3.setText("Sport :");
+        jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 430, 80, 30));
+
+        jComboBoxSport.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel2.add(jComboBoxSport, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 430, 260, -1));
+
+        jButtonDetails.setBackground(new java.awt.Color(0, 0, 0));
+        jButtonDetails.setFont(new java.awt.Font("Sitka Text", 1, 12)); // NOI18N
+        jButtonDetails.setForeground(new java.awt.Color(255, 255, 255));
+        jButtonDetails.setText("Details");
+        jButtonDetails.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonDetailsActionPerformed(evt);
+            }
+        });
+        jPanel2.add(jButtonDetails, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 540, 90, -1));
+
+        jButtonReset.setBackground(new java.awt.Color(0, 0, 0));
+        jButtonReset.setFont(new java.awt.Font("Sitka Text", 1, 12)); // NOI18N
+        jButtonReset.setForeground(new java.awt.Color(255, 255, 255));
+        jButtonReset.setText("Reset");
+        jButtonReset.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonResetActionPerformed(evt);
+            }
+        });
+        jPanel2.add(jButtonReset, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 540, 90, -1));
+
+        jButtonBack.setBackground(new java.awt.Color(0, 0, 0));
+        jButtonBack.setFont(new java.awt.Font("Sitka Text", 1, 12)); // NOI18N
+        jButtonBack.setForeground(new java.awt.Color(255, 255, 255));
+        jButtonBack.setText("Back");
+        jButtonBack.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonBackActionPerformed(evt);
+            }
+        });
+        jPanel2.add(jButtonBack, new org.netbeans.lib.awtextra.AbsoluteConstraints(820, 540, 90, -1));
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 975, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 679, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 30, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+
+        setSize(new java.awt.Dimension(987, 715));
+        setLocationRelativeTo(null);
+    }// </editor-fold>//GEN-END:initComponents
+
+    
+    //=====================Reset Button========================================
+    private void jButtonResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonResetActionPerformed
+        ClearTextFields();
+    }//GEN-LAST:event_jButtonResetActionPerformed
+
+    
+    
+    //============================Add button=================================
+    private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddActionPerformed
+       try {
+            Class.forName("com.mysql.jdbc.Driver");
+            sqlconn = DriverManager.getConnection(dataconn, username, password);
+            pst = sqlconn.prepareStatement("insert into tournament (tname,sid) values(?,(select sid from sport where sport.sname=?))");
+            
+            //get values from interface
+            pst.setString(1,jTextFieldTname.getText());
+            pst.setString(2,(String) jComboBoxSport.getSelectedItem());
+            
+            
+           // execute statement
+           pst.executeUpdate();
+           JOptionPane.showMessageDialog(this, "New Tournament.");
+           
+            //call function to update table
+           UpdateDB();
+           //Clear text fields
+           ClearTextFields();
+           sqlconn.close();
+            }
+        catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(Tournament.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(Tournament.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+           JOptionPane.showMessageDialog(null, ex);
+        }
+    }//GEN-LAST:event_jButtonAddActionPerformed
+
+    
+    //====================Back Button===================================
+    private void jButtonBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBackActionPerformed
+        Menu m = new Menu();
+        m.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButtonBackActionPerformed
+
+    
+    //=======================when clicked a row==============================
+    private void tournamentTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tournamentTableMouseClicked
+       
+        tid = Integer.parseInt(tournamentTable.getValueAt(tournamentTable.getSelectedRow(), 0).toString()); 
+        TournamentDetails.selectedTid=tid;// assign value to variable in SportDetail interface
+        selectCheck = 1;//identify a row is selected  
+        
+    }//GEN-LAST:event_tournamentTableMouseClicked
+
+    
+    //======================Details Button================================================
+    private void jButtonDetailsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDetailsActionPerformed
+        
+        //if clause is used to identify wether a row is selected
+       if (selectCheck==0){
+           JOptionPane.showMessageDialog(this, "Please select a Tournament");
+       }
+       
+       if(selectCheck==1){
+          
+           
+           TournamentDetails td = new TournamentDetails();
+           td.setVisible(true);
+       }
+    }//GEN-LAST:event_jButtonDetailsActionPerformed
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(Tournament.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(Tournament.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(Tournament.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(Tournament.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new Tournament().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButtonAdd;
+    private javax.swing.JButton jButtonBack;
+    private javax.swing.JButton jButtonDetails;
+    private javax.swing.JButton jButtonReset;
+    private javax.swing.JComboBox<String> jComboBoxSport;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextField jTextFieldTname;
+    private javax.swing.JTable tournamentTable;
+    // End of variables declaration//GEN-END:variables
+}
